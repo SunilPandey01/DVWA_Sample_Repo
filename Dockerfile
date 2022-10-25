@@ -1,13 +1,12 @@
-# FROM node:6-stretch
-FROM node:14.1.0
-
-RUN mkdir /usr/src/goof
-RUN mkdir /tmp/extracted_files
-COPY . /usr/src/goof
-WORKDIR /usr/src/goof
-
-RUN npm update
-RUN npm install
-EXPOSE 3001
-EXPOSE 9229
-ENTRYPOINT ["npm", "start"]
+#
+# Build stage
+#
+FROM maven:alpine as build
+ENV HOME=/usr/cyber-security-sample-vulnerable
+RUN mkdir -p $HOME
+WORKDIR $HOME
+ADD . $HOME
+ADD pom.xml $HOME
+RUN mvn verify --fail-never
+ADD . $HOME
+RUN mvn package
